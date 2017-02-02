@@ -92,7 +92,7 @@ class Network(object):
 	return -tf.reduce_mean(tf.reduce_sum((y*tf.log(a)+(1-y)*tf.log(1-a)), 1))
 
     def evaluate(self, a, y):
-	return sum(int(np.argmax(i) == np.argmax(j)) for i,j in zip(a,y))
+	return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(a, 1), tf.argmax(y, 1)), tf.float32))
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
             test_data=None):
@@ -111,6 +111,8 @@ class Network(object):
 
 	a = self.feedforward(x)
 	c = self.cost(a,y)
+
+	td_eval = self.evaluate(a,y)
 	
 	opt = tf.train.GradientDescentOptimizer(eta)
 	train = opt.minimize(c)
@@ -122,5 +124,5 @@ class Network(object):
 		inputs,outputs = my_shuffle(training_data)
 		for i in range(5000):
 		    sess.run(train, feed_dict = {x:inputs[10*i:10*(i+1)], y:outputs[10*i:10*(i+1)]})
-		td_results = sess.run(a, feed_dict = {x:tdi})
-		print j , self.evaluate(td_results, tdo)
+		eval_results = sess.run(td_eval, feed_dict = {x:tdi, y:tdo})
+		print j , eval_results
