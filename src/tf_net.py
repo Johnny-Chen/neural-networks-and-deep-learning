@@ -122,7 +122,8 @@ class Network(object):
 
             for j in range(epochs):
 		inputs,outputs = my_shuffle(training_data)
-		for i in range(5000):
-		    sess.run(train, feed_dict = {x:inputs[10*i:10*(i+1)], y:outputs[10*i:10*(i+1)]})
+		num_training_batches = len(inputs) / mini_batch_size
+		for i in range(num_training_batches):
+		    sess.run(train, feed_dict = {x:inputs[mini_batch_size*i:mini_batch_size*(i+1)], y:outputs[mini_batch_size*i:mini_batch_size*(i+1)]})
 		eval_results = sess.run(td_eval, feed_dict = {x:tdi, y:tdo})
 		print j , eval_results
