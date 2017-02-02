@@ -73,7 +73,7 @@ class Network(object):
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.biases = [tf.Variable(tf.random_normal([y], dtype=tf.float32)) for y in sizes[1:]]
-        self.weights = [tf.Variable(tf.random_normal([x,y], dtype=tf.float32))
+        self.weights = [tf.Variable(tf.random_normal([x,y], dtype=tf.float32))/np.sqrt(x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
         #self.biases = [tf.Variable(tf.zeros([y], tf.float32)) for y in sizes[1:]]
         #self.weights = [tf.Variable(tf.zeros([x,y], tf.float32))
@@ -83,11 +83,13 @@ class Network(object):
         """Return the output of the network if ``a`` is input."""
 	for w,b in zip(self.weights, self.biases):
             a = tf.sigmoid(tf.matmul(a, w) + b)
+            #####a = tf.nn.softmax(tf.matmul(a, w) + b)
 	return a
 
     def cost(self, a, y):
 	""" quadratic cost """
-	return tf.reduce_mean(tf.reduce_sum(tf.square(a-y), 1))
+	#####return tf.reduce_mean(tf.reduce_sum(tf.square(a-y), 1))
+	return -tf.reduce_mean(tf.reduce_sum((y*tf.log(a)+(1-y)*tf.log(1-a)), 1))
 
     def evaluate(self, a, y):
 	return sum(int(np.argmax(i) == np.argmax(j)) for i,j in zip(a,y))
