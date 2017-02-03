@@ -82,14 +82,16 @@ class Network(object):
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
 	for w,b in zip(self.weights, self.biases):
-            a = tf.sigmoid(tf.matmul(a, w) + b)
-            #####a = tf.nn.softmax(tf.matmul(a, w) + b)
+            #####a = tf.sigmoid(tf.matmul(a, w) + b)
+            a = tf.nn.softmax(tf.matmul(a, w) + b)
 	return a
 
     def cost(self, a, y):
 	""" quadratic cost """
 	#####return tf.reduce_mean(tf.reduce_sum(tf.square(a-y), 1))
-	return -tf.reduce_mean(tf.reduce_sum((y*tf.log(a)+(1-y)*tf.log(1-a)), 1))
+	#####return -tf.reduce_mean(tf.reduce_sum((y*tf.log(a)+(1-y)*tf.log(1-a)), 1))
+	# log-likely(google sample)
+	return -tf.reduce_sum(y*tf.log(a))
 
     def evaluate(self, a, y):
 	return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(a, 1), tf.argmax(y, 1)), tf.float32))
